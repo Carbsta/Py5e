@@ -31,24 +31,35 @@ class Die:
         return "d{}".format(self.upper)
 
 class DK:
-    def __init__(self,drop=False,keep=False,highest=False,lowest=False,amount=0):
+    def __init__(self,drop=False,keep=False,highest=False,lowest=False,amount=0,die=None):
         self.drop = drop
         self.keep = keep
         self.highest = highest
         self.lowest = lowest
         self.amount = amount
+        self.die = die
 
 class Roll:
-    def __init__(self, die=Die(20), mod=0, dk=DK()):
+    def __init__(self, die=Die(20), mod=0, dk=None):
         if not isinstance(die, Die):
-            raise TypeError("Roll takes a die of type Die")
+            raise TypeError("Roll die takes a Die object")
         self.die = die
         self.mod = mod
+        if dk is not None and not isinstance(dk, DK):
+            raise TypeError("Roll dk takes a DK object")
         self.dk = dk
 
     def roll(self):
-        if self.drop == None:
-            return self.die.roll()+self.mod
+        if self.dk is None:
+            if isinstance(self.mod, Roll) or isinstance(self.mod, Die):
+                return self.die.roll()+self.mod.roll()
+            else:
+                return self.die.roll()+self.mod
+        else:
+            if isinstance(self.mod, Roll) or isinstance(self.mod, Die):
+                return [self.die.roll()].append(self.mod.roll())
+            else:
+                return 0
 
 
     def __str__(self):
@@ -57,3 +68,4 @@ class Roll:
         else:
             return "{}+{}".format(self.die,self.mod)
 
+print(Roll(Die(6),Roll(Die(6),Roll(Die(6)))).roll())
