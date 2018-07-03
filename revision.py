@@ -113,7 +113,7 @@ class Roll(Rollable):
         else:
             dk.rolls.append(roll)
             if isinstance(self.mod, Rollable):
-                self.mod._roll(dk=dk)
+                return self.mod._roll(dk=dk)
             else:
                 return self.mod
 
@@ -130,4 +130,10 @@ d20 = Die(20)
 d6 = Die(6)
 roll = Roll(d20,d20,advantage)
 statsRoll = Roll(d6,Roll(d6,Roll(d6,Roll(d6))),dk=dl1)
+spellAttackBonus = 5
+spellAttackRoll = Roll(d20,spellAttackBonus)
+spellAttackRollAdv = Roll(d20,Roll(d20,mod=spellAttackBonus),dk=advantage)
+print(roll.roll())
 print(statsRoll.roll())
+print(spellAttackRoll.roll())
+print(spellAttackRollAdv.roll())
