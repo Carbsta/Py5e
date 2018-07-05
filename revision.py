@@ -63,14 +63,79 @@ class Agent:
     def gen_array():
         stat_dk = DK(drop=True,operator=Lowest(),amount=1)
         stat_roll = Roll(D6,Roll(D6,Roll(D6,D6)),stat_dk)
-        stats = []
+        stat_array = []
         for x in range(6):
-            stats.append(Ability(stat_roll.roll()))
-        return stats
+            stat_array.append(Ability(stat_roll.roll()))
+        return stat_array
 
     @staticmethod
     def print_array(array: List[Ability]):
         print(list(map(lambda x: x.__str__(), array)))
+
+class Name:
+    def __init__(self,name,plural=None,adjective=None,possessive=None,possessive_plural=None):
+        self.name, self.plural, self.adjective, self.possessive, self.possessive_plural = name, name, name, name, name
+        if plural is not None:
+            self.plural = plural
+        if adjective is not None:
+            self.adjective = adjective
+        if possessive is not None:
+            self.possessive = possessive
+        if possessive_plural is not None:
+            self.possessive_plural = possessive_plural
+
+class AbilityScoreIncrease:
+    def __init__(self,str=0,dex=0,con=0,int=0,wis=0,cha=0):
+        self.str=str
+        self.dex=dex
+        self.con=con
+        self.int=int
+        self.wis=wis
+        self.cha=cha
+
+class Lifespan:
+    def __init__(self,lower_bound,upper_bound,average=None):
+        self.lowerBound = lower_bound
+        self.upperBound = upper_bound
+        self.average = average
+
+class Age:
+    def __init__(self,adult: int,lifespan: Lifespan,description: str):
+        self.adult = adult
+        self.lifespan = lifespan
+        self.description = description
+
+class Alignment:
+    alignments = {"CG":"Chaotic Good","CN":"Chaotic Neutral","CE":"Chaotic Evil",
+                  "NG":"Neutral Good","N":"True Neutral","NE":"Neutral Evil",
+                  "LG":"Lawful Good","LN":"Lawful Neutral","LE":"Lawful Evil"}
+    def __init__(self,shorthand,description):
+        if shorthand not in Alignment.alignments:
+            raise ValueError("shorthand takes an alignment in the form 'XY' with X being Chaotic-Lawful and Y being Good-Evil. True Neutral is represented with 'N'")
+        self.shorthand = shorthand
+        self.alignment = Alignment.alignments[shorthand]
+        self.description = description
+
+class Size:
+    sizeClasses = {"Tiny":2.5,"Small":5,"Medium":5,"Large":10,"Huge":15,"Gargantuan":20}
+    def __init__(self,size_class,lower_height,upper_height,average_weight,description):
+        if size_class not in Size.sizeClasses:
+            raise ValueError("size_class must be one of the 5e sizes")
+        self.sizeClass = size_class
+        self.squareFeet = Size.sizeClasses[size_class]
+        self.lowerHeight = lower_height
+        self.upperHeight = upper_height
+        self.averageWeight = average_weight
+        self.description = description
+
+class Race:
+    name = Name("Singular","Plural","Adjective","Possessive","Possessive Plural")
+    abilityScoreIncrease = AbilityScoreIncrease()
+    age = Age(0,Lifespan(0,0),"A textual description of the race's lifespan")
+    alignment = Alignment("N","A textual description of the race's alignment")
+    size = Size("Medium",0,0,0,"A textual description of the race's build")
+    speed = 30
+    Languages = []
 
 class Item:
     pass
@@ -198,8 +263,3 @@ class Roll(Rollable):
 
 ##constants:
 D6 = Die(6)
-
-
-stats = Agent.gen_array()
-test = Agent(stat_array=stats)
-print(test)
