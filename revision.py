@@ -128,6 +128,12 @@ class Size:
         self.averageWeight = average_weight
         self.description = description
 
+class Action:
+    pass
+
+class BonusAction:
+    pass
+
 class Race:
     name = Name("Singular","Plural","Adjective","Possessive","Possessive Plural")
     abilityScoreIncrease = AbilityScoreIncrease()
