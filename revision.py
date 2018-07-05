@@ -1,7 +1,23 @@
 from random import randint
 from heapq import nlargest, nsmallest
-from typing import Union
+from typing import Union, List
 from math import floor
+
+class Ability:
+    def __init__(self,base_score : int,bonuses=0,temporary=0):
+        self.baseScore = base_score
+        self.bonuses = bonuses
+        self.temporary = temporary
+        self.score = 0
+        self.modifier = 0
+        self.calc()
+
+    def __str__(self):
+        return "{}({:+d})".format(self.score,self.modifier)
+
+    def calc(self):
+        self.score = self.baseScore + self.bonuses + self.temporary
+        self.modifier = floor((self.score - 10) / 2)
 
 class Agent:
     def __init__(self,str=10,dex=10,con=10,int=10,wis=10,cha=10):
@@ -24,22 +40,18 @@ class Agent:
         output = output[:-2]
         return output
 
+    @staticmethod
+    def gen_array():
+        stat_dk = DK(drop=True,operator=Lowest(),amount=1)
+        stat_roll = Roll(D6,Roll(D6,Roll(D6,D6)),stat_dk)
+        stats = []
+        for x in range(6):
+            stats.append(Ability(stat_roll.roll()))
+        return stats
 
-class Ability:
-    def __init__(self,base_score : int,bonuses=0,temporary=0):
-        self.baseScore = base_score
-        self.bonuses = bonuses
-        self.temporary = temporary
-        self.score = 0
-        self.modifier = 0
-        self.calc()
-
-    def __str__(self):
-        return "{}({:+d})".format(self.score,self.modifier)
-
-    def calc(self):
-        self.score = self.baseScore + self.bonuses + self.temporary
-        self.modifier = floor((self.score - 10) / 2)
+    @staticmethod
+    def print_array(array: List[Ability]):
+        print(list(map(lambda x: x.__str__(), array)))
 
 class Item:
     pass
@@ -88,9 +100,9 @@ class DK:
             result = self.operator.operator(self.amount,self.rolls)
         elif self.drop:
             if isinstance(self.operator, Highest):
-                return Lowest().operator(len(self.rolls)-self.amount,self.rolls)
+                result = Lowest().operator(len(self.rolls)-self.amount,self.rolls)
             elif isinstance(self.operator, Lowest):
-                return Highest().operator(len(self.rolls)-self.amount,self.rolls)
+                result = Highest().operator(len(self.rolls)-self.amount,self.rolls)
         self.rolls = []
         return result
 
@@ -124,7 +136,7 @@ class Die(Rollable):
         return "d{}".format(self.upper)
 
 class Roll(Rollable):
-    def __init__(self, die=Die(20), mod : Union[int, Rollable] = 0, dk=None):
+    def __init__(self, die=Die(20), mod: Union[int, Rollable] = 0, dk=None):
         if not isinstance(die, Die):
             raise TypeError("Roll die takes a Die object")
         self.die = die
@@ -164,3 +176,11 @@ class Roll(Rollable):
             return str(self.die)
         else:
             return "{}+{}".format(self.die,self.mod)
+
+##constants:
+D6 = Die(6)
+
+
+stats = Agent.gen_array()
+Agent.print_array(stats)
+
