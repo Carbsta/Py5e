@@ -1,6 +1,6 @@
 from random import randint
 from heapq import nlargest, nsmallest
-from typing import Union, List
+from typing import Union, List, Dict
 from math import floor
 
 class Ability:
@@ -20,13 +20,29 @@ class Ability:
         self.modifier = floor((self.score - 10) / 2)
 
 class Agent:
-    def __init__(self,str=10,dex=10,con=10,int=10,wis=10,cha=10):
-        self.str = Ability(str)
-        self.dex = Ability(dex)
-        self.con = Ability(con)
-        self.int = Ability(int)
-        self.wis = Ability(wis)
-        self.cha = Ability(cha)
+    def __init__(self,str=10,dex=10,con=10,int=10,wis=10,cha=10,
+                 stat_dictionary: Union[Dict[str, Ability],None] = None,stat_array: Union[List[Ability],None] = None):
+        if stat_dictionary is not None:
+            self.str = stat_dictionary["str"]
+            self.dex = stat_dictionary["dex"]
+            self.con = stat_dictionary["con"]
+            self.int = stat_dictionary["int"]
+            self.wis = stat_dictionary["wis"]
+            self.cha = stat_dictionary["cha"]
+        elif stat_array is not None:
+            self.str = stat_array[0]
+            self.dex = stat_array[1]
+            self.con = stat_array[2]
+            self.int = stat_array[3]
+            self.wis = stat_array[4]
+            self.cha = stat_array[5]
+        else:
+            self.str = Ability(str)
+            self.dex = Ability(dex)
+            self.con = Ability(con)
+            self.int = Ability(int)
+            self.wis = Ability(wis)
+            self.cha = Ability(cha)
         self.stats = {"str":self.str,"dex":self.dex,"con":self.con,"int":self.int,"wis":self.wis,"cha":self.cha}
 
     def update(self):
@@ -39,6 +55,9 @@ class Agent:
             output += "{} = {}, ".format(name,stat)
         output = output[:-2]
         return output
+
+    def get_stats_dict(self):
+        return self.stats
 
     @staticmethod
     def gen_array():
@@ -182,5 +201,5 @@ D6 = Die(6)
 
 
 stats = Agent.gen_array()
-Agent.print_array(stats)
-
+test = Agent(stat_array=stats)
+print(test)
