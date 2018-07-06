@@ -149,6 +149,13 @@ class Item:
 class Proficiencies:
     pass
 
+class DamageType:
+    pass
+
+class Resistance:
+    def __init__(self, damage_type):
+        self.type = damage_type
+
 class Condition:
     pass
 
